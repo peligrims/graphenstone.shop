@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+  <code>autocalc_option_custom_fields</code>
+  <name>Дополнительные поля для опций (autocalc)</name>
+  <version>1.0.0</version>
+  <author>mpn2005</author>
+  
+  <file path="admin/model/catalog/product.php">
+    <operation error="skip">
+      <search><![CDATA[SELECT * FROM " . DB_PREFIX . "product_option_value pov]]></search>
+      <add position="replace"><![CDATA[SELECT *, pov.image AS image FROM " . DB_PREFIX . "product_option_value pov]]></add>
+    </operation>    
+    <operation>
+      <search><![CDATA[if (isset($data['product_option'])) {]]></search>
+      <add position="after"><![CDATA[
+        // begin: owq_option_fields
+        $owq_result = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "product_option_value` LIKE 'image'");
+        if ($owq_result->num_rows == 0) $this->db->query("ALTER TABLE `" . DB_PREFIX . "product_option_value` ADD COLUMN `image` varchar(255) NOT NULL DEFAULT ''"); 
+        $owq_result = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "product_option_value` LIKE 'sku'");
+        if ($owq_result->num_rows == 0) $this->db->query("ALTER TABLE `" . DB_PREFIX . "product_option_value` ADD COLUMN `sku` varchar(64) NOT NULL DEFAULT ''");
+        $owq_result = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "product_option_value` LIKE 'model'");
+        if ($owq_result->num_rows == 0) $this->db->query("ALTER TABLE `" . DB_PREFIX . "product_option_value` ADD COLUMN `model` varchar(255) NOT NULL DEFAULT ''");
+        $owq_result = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "product_option_value` LIKE 'upc'");
+        if ($owq_result->num_rows == 0) $this->db->query("ALTER TABLE `" . DB_PREFIX . "product_option_value` ADD COLUMN `upc` varchar(255) NOT NULL DEFAULT ''");
+        $owq_result = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "product_option_value` LIKE 'description'");
+        if ($owq_result->num_rows == 0) $this->db->query("ALTER TABLE `" . DB_PREFIX . "product_option_value` ADD COLUMN `description` text NOT NULL DEFAULT ''");
+        // end: owq_option_fields
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[INSERT INTO " . DB_PREFIX . "product_option_value SET]]></search>
+      <add position="replace"><![CDATA[INSERT INTO " . DB_PREFIX . "product_option_value SET image = '" . $this->db->escape(!empty($product_option_value['image']) ? $product_option_value['image'] : '') . "', sku = '" . $this->db->escape(!empty($product_option_value['sku']) ? $product_option_value['sku'] : '') . "', model = '" . $this->db->escape(!empty($product_option_value['model']) ? $product_option_value['model'] : '') . "', upc = '" . $this->db->escape(!empty($product_option_value['upc']) ? $product_option_value['upc'] : '') . "', description = '" . $this->db->escape(!empty($product_option_value['description']) ? $product_option_value['description'] : '') . "', ]]></add>
+    </operation>      
+    <operation>
+      <search><![CDATA[$product_option_value_data[] = array(]]></search>
+      <add position="after"><![CDATA[
+        // begin: owq_option_fields
+        'image'       => (!empty($product_option_value['image']) ? $product_option_value['image'] : ''),
+        'sku'         => (!empty($product_option_value['sku']) ? $product_option_value['sku'] : ''),
+        'model'       => (!empty($product_option_value['model']) ? $product_option_value['model'] : ''),
+        'upc'         => (!empty($product_option_value['upc']) ? $product_option_value['upc'] : ''),
+        'description' => (!empty($product_option_value['description']) ? $product_option_value['description'] : ''),
+        // end: owq_option_fields
+      ]]></add>
+    </operation>    
+  </file>
+  <file path="admin/controller/catalog/product.php">
+    <operation>
+      <search index="0"><![CDATA[$product_option_value_data[] = array(]]></search>
+      <add position="after"><![CDATA[
+        // begin: owq_option_fields
+        'sku'         => (!empty($product_option_value['sku']) ? $product_option_value['sku'] : ''),
+        'model'       => (!empty($product_option_value['model']) ? $product_option_value['model'] : ''),
+        'upc'         => (!empty($product_option_value['upc']) ? $product_option_value['upc'] : ''),
+        'description' => (!empty($product_option_value['description']) ? $product_option_value['description'] : ''),
+        // end: owq_option_fields
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[$data['product_options'] = array();]]></search>
+      <add position="after"><![CDATA[
+        // begin: options_with_quantity
+        $this->load->model('tool/image');    
+        // end: options_with_quantity
+      ]]></add>
+    </operation>
+    <operation>
+      <search index="0"><![CDATA[$product_option_value_data[] = array(]]></search>
+      <add position="replace"><![CDATA[
+        if (!empty($product_option_value['image']) && is_file(DIR_IMAGE . $product_option_value['image'])) {
+            $image = $product_option_value['image'];
+            $thumb = $product_option_value['image'];
+        } else {
+            $image = '';
+            $thumb = 'no_image.png';
+        }
+
+        $product_option_value_data[] = array(
+          'image' => $image,
+          'thumb' => $this->model_tool_image->resize($thumb, 100, 100),
+      ]]></add>
+    </operation>
+  </file>
+  <file path="admin/view/template/catalog/product_form.twig">    
+    <operation>
+      <search><![CDATA[html += '        <td class="text-left">{{ entry_option_value }}</td>';]]></search>
+      <add position="after"><![CDATA[
+        // begin: owq_option_fields
+        html += '        <td class="text-right"></td>';
+        html += '        <td class="text-right">{{ entry_description }}</td>';
+        // end: owq_option_fields
+      ]]></add>
+    </operation>
+    <operation>
+      <search index="0"><![CDATA[<td class="text-left">{{ entry_option_value }}</td>]]></search>
+      <add position="after"><![CDATA[
+        <!-- begin: owq_option_fields -->
+        <td class="text-right"></td>
+        <td class="text-right">{{ entry_image }}</td>
+        <!-- end: owq_option_fields -->
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[name="product_option[{{ option_row }}][product_option_value][{{ option_value_row }}][product_option_value_id]"]]></search>
+      <add position="after"><![CDATA[
+        <!-- begin: owq_option_fields -->
+        <td class="right">
+          {{ entry_sku }}:
+          <input type="text" name="product_option[{{ option_row }}][product_option_value][{{ option_value_row }}][sku]" value="{{ product_option_value.sku }}" placeholder="{{ entry_sku }}" class="form-control" />
+          {{ entry_model }}:
+          <input type="text" name="product_option[{{ option_row }}][product_option_value][{{ option_value_row }}][model]" value="{{ product_option_value.model }}" placeholder="{{ entry_model }}" class="form-control" />
+          {{ entry_upc }}:
+          <input type="text" name="product_option[{{ option_row }}][product_option_value][{{ option_value_row }}][upc]" value="{{ product_option_value.upc }}" placeholder="{{ entry_upc }}" class="form-control" />
+        </td>
+        <td class="right">
+          <a href="" id="thumb-optimage{{ option_value_row }}" data-toggle="image" class="img-thumbnail"><img src="{{ product_option_value.thumb }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a>
+          <input type="hidden" name="product_option[{{ option_row }}][product_option_value][{{ option_value_row }}][image]" value="{{ product_option_value.image }}" id="input-optimage{{ option_value_row }}" />
+        </td>
+        <!-- end: owq_option_fields -->
+      ]]></add>
+    </operation>    
+    <operation>
+      <search><![CDATA[html += '  </select><input type="hidden" name="product_option[' + option_row + '][product_option_value][' + option_value_row + '][product_option_value_id]"]]></search>
+      <add position="after"><![CDATA[
+        // begin: owq_option_fields
+        html += '<td class="right">';
+        html += '  {{ entry_sku }}:<input type="text" name="product_option[' + option_row + '][product_option_value][' + option_value_row + '][sku]" value="" placeholder="{{ entry_sku }}" class="form-control" />';
+        html += '  {{ entry_model }}:<input type="text" name="product_option[' + option_row + '][product_option_value][' + option_value_row + '][model]" value="" placeholder="{{ entry_model }}" class="form-control" />';
+        html += '  {{ entry_upc }}:<input type="text" name="product_option[' + option_row + '][product_option_value][' + option_value_row + '][upc]" value="" placeholder="{{ entry_upc }}" class="form-control" />';
+        html += '</td>';
+        html += '<td class="right">';
+        html += '  <a href="" id="thumb-optimage' + option_value_row + '" data-toggle="image" class="img-thumbnail"><img src="{{ placeholder }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a>';
+        html += '  <input type="hidden" name="product_option[' + option_row + '][product_option_value][' + option_value_row + '][image]" value="" id="input-optimage' + option_value_row + '" />';
+        html += '</td>';
+        // end: owq_option_fields
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[<td class="text-left"><button type="button" onclick="addOptionValue('{{ option_row }}');"]]></search>
+      <add position="before"><![CDATA[
+        <!-- begin: owq_option_fields -->
+        <td colspan{# #}="2"></td>
+        <!-- end: owq_option_fields -->
+      ]]></add>
+    </operation>    
+    <operation>
+      <search><![CDATA[html += '        <td class="text-left"><button type="button" onclick="addOptionValue(' + option_row + ');"]]></search>
+      <add position="before"><![CDATA[
+        // begin: owq_option_fields
+        html += '        <td colspan{# #}="2"></td>';
+        // end: owq_option_fields
+      ]]></add>
+    </operation>
+  </file>
+  
+  <file path="catalog/model/catalog/product.php">
+    <operation>
+      <search><![CDATA[=> $product_option_value['product_option_value_id'],]]></search>
+      <add position="after"><![CDATA[
+        'sku'         => !empty($product_option_value['sku']) ? $product_option_value['sku'] : '',
+        'model'       => !empty($product_option_value['model']) ? $product_option_value['model'] : '',
+        'upc'         => !empty($product_option_value['upc']) ? $product_option_value['upc'] : '',
+        'description' => !empty($product_option_value['description']) ? $product_option_value['description'] : '',
+      ]]></add>
+    </operation>
+  </file>
+
+</modification>

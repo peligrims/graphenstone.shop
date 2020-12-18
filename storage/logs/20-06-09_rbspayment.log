@@ -1,0 +1,15 @@
+2020-06-09 10:43:50 - RBS PAYMENT: https://3dsec.sberbank.ru/payment/rest/register.do
+REQUEST: {"orderNumber":"2_1591699429","amount":440500,"returnUrl":"https:\/\/graphenstone.shop\/index.php?route=extension\/payment\/rbs\/callback","jsonParams":"{\"CMS:\":\"opencart 3.x\",\"Module-Version: \":\"2.7.2\",\"0\":{\"email\":\"angelalex1975@yandex.ru\",\"phone\":\"+79254868066\"}}","currency":"643","userName":"alpharock-api","password":"alpharock","language":"ru"}
+RESPONSE: {"orderId":"6cfcbebe-eb47-7894-826b-94f65e390d86","formUrl":"https://3dsec.sberbank.ru/payment/merchants/sbersafe/payment_ru.html?mdOrder=6cfcbebe-eb47-7894-826b-94f65e390d86"}
+
+
+2020-06-09 11:17:53 - RBS PAYMENT: https://3dsec.sberbank.ru/payment/rest/register.do
+REQUEST: {"orderNumber":"3_1591701472","amount":220500,"returnUrl":"https:\/\/graphenstone.shop\/index.php?route=extension\/payment\/rbs\/callback","jsonParams":"{\"CMS:\":\"opencart 3.x\",\"Module-Version: \":\"2.7.2\",\"0\":{\"email\":\"angelalex1975@yandex.ru\",\"phone\":\"+79254868066\"}}","currency":"643","userName":"alpharock-api","password":"alpharock","language":"ru"}
+RESPONSE: {"orderId":"170b2628-e906-71ba-bde6-57355e390d86","formUrl":"https://3dsec.sberbank.ru/payment/merchants/sbersafe/payment_ru.html?mdOrder=170b2628-e906-71ba-bde6-57355e390d86"}
+
+
+2020-06-09 11:20:03 - RBS PAYMENT: https://3dsec.sberbank.ru/payment/rest/getOrderStatusExtended.do
+REQUEST: {"orderId":"170b2628-e906-71ba-bde6-57355e390d86","userName":"alpharock-api","password":"alpharock","language":"ru"}
+RESPONSE: {"errorCode":"0","errorMessage":"Успешно","orderNumber":"3_1591701472","orderStatus":2,"actionCode":0,"actionCodeDescription":"","amount":220500,"currency":"643","date":1591701473007,"orderDescription":"","ip":"94.25.171.157","merchantOrderParams":[{"name":"0","value":"{email=angelalex1975@yandex.ru, phone=+79254868066}"},{"name":"Module-Version: ","value":"2.7.2"},{"name":"CMS:","value":"opencart 3.x"}],"transactionAttributes":[],"attributes":[{"name":"mdOrder","value":"170b2628-e906-71ba-bde6-57355e390d86"}],"cardAuthInfo":{"maskedPan":"411111**1111","expiration":"202412","cardholderName":"CARDHOLDER NAME","approvalCode":"123456","pan":"411111**1111"},"authDateTime":1591701601912,"terminalId":"123456","authRefNum":"484724097626","paymentAmountInfo":{"paymentState":"DEPOSITED","approvedAmount":220500,"depositedAmount":220500,"refundedAmount":0},"bankInfo":{"bankName":"TEST CARD","bankCountryCode":"RU","bankCountryName":"Россия"}}
+
+
